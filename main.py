@@ -2,6 +2,19 @@ import os
 import streamlit as st
 import time
 
+st.markdown(
+    """
+    <style>
+    .css-1jc7ptx, .e1ewe7hr3, .viewerBadge_container__1QSob,
+    .styles_viewerBadge__1yB5_, .viewerBadge_link__1S137,
+    .viewerBadge_text__1JaDK {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 HUGGINGFACEHUB_API_TOKEN = "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"
 # Assuming the HUGGINGFACEHUB_API_TOKEN is set in your environment for security reasons.
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACEHUB_API_TOKEN
