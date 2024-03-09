@@ -45,7 +45,9 @@ def encode_texts(texts):
     return embeddings.cpu().numpy()
     
 def search_documents(query, df, top_n=1):
+    start_time = time.time()
     query_embedding = encode_texts([query])[0]
+    end_time = time.time()
 
     title_similarities = cosine_similarity([query_embedding], title_embeddings)[0]
     content_similarities = cosine_similarity([query_embedding], content_embeddings)[0]
@@ -56,7 +58,7 @@ def search_documents(query, df, top_n=1):
     top_indices = np.argsort(total_similarities)[::-1][:top_n]
     top_documents = [(df.iloc[i]['title'], df.iloc[i]['content'], total_similarities[i]) for i in top_indices]
 
-    return top_documents
+    return top_documents, end_time - start_time
 
 def filter_documents_by_threshold(top_documents, threshold):
     filtered_documents = [(title, content, score) for title, content, score in top_documents if score >= threshold]
@@ -65,7 +67,7 @@ def filter_documents_by_threshold(top_documents, threshold):
 def demo_rag_qna(query, threshold=0.6, chatbot=False):
     # Search engine phase
     start_time = time.time()
-    top_documents = search_documents(query, df)
+    top_documents, encoding_time = search_documents(query, df)
     relevant_documents = filter_documents_by_threshold(top_documents, threshold)
     end_time = time.time()
     search_engine_time = end_time - start_time
@@ -84,22 +86,22 @@ def demo_rag_qna(query, threshold=0.6, chatbot=False):
             result = query_llm_chain(query, context=concat_context+"\nAnswer it based on this context.")
             end_time = time.time()
             chatbot_time = end_time - start_time
-            return result, search_engine_time, chatbot_time
+            return result, search_engine_time, encoding_time, chatbot_time
         else:
             # return indo_translator.translate(query_llm_chain(query))
             result = query_llm_chain(query)
             end_time = time.time()
             chatbot_time = end_time - start_time
-            return result, search_engine_time, chatbot_time
+            return result, search_engine_time, encoding_time, chatbot_time
     else:
         end_time = time.time()
         chatbot_time = end_time - start_time
         if top_documents[0][2] < threshold:
-            return 'There are no answers found in the database.', search_engine_time, chatbot_time
+            return 'There are no answers found in the database.', search_engine_time, encoding_time, chatbot_time
         for i, (title, content, similarity) in enumerate(relevant_documents, start=1):
             concat_context += (content+"\n")
         # print("Context:\n", concat_context)
-        return concat_context, search_engine_time, chatbot_time
+        return concat_context, search_engine_time, encoding_time, chatbot_time
 
 
 if __name__ == "__main__":
