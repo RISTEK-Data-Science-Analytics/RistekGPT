@@ -31,7 +31,7 @@ def main():
         response = ""
         with st.spinner("Thinking..."):
             # Adjust the chatbot parameter based on the button pressed.
-            response, search_engine_time, chatbot_time = demo_rag_qna(question, threshold=0.6, chatbot=chatbot_mode)
+            response, search_engine_time, chatbot_time = demo_rag_qna(question, threshold=0.75, chatbot=chatbot_mode)
 
         formatted_response = ""  # Initialize an empty string to accumulate the response.
         for i in range(len(response)):

@@ -9,6 +9,7 @@ from langchain_community.llms import HuggingFaceEndpoint
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from config import HUGGINGFACEHUB_API_TOKEN, DATAFRAME_NAME, API_ST_URL, GENERATOR_ID
+from processing import replace_ristek
 # from sklearn.metrics.pairwise import cosine_similarity
 # from sentence_transformers import SentenceTransformer
 # from deep_translator import GoogleTranslator
@@ -63,6 +64,7 @@ llm_chain = LLMChain(prompt=prompt, llm=llm)
 #     return top_documents
 
 # We couldn't preprocess the dataframe if we're using API
+# If lots of user use it, we're blocked
 def query_api(payload):
 	response = requests.post(API_ST_URL, headers=headers, json=payload)
 	return response.json()
@@ -81,15 +83,17 @@ def search_documents_api(query, df, top_n=1):
         "inputs": {
             "source_sentence": query,
             "sentences": titles
-        }
+        },
+        "options": {"wait_for_model": True}
     })
 
-    print(title_similarities)
+    # print(title_similarities)
     # content_similarities = query_api({
     #     "inputs": {
     #         "source_sentence": query,
     #         "sentences": contents
-    #     }
+    #     },
+    #     "options": {"wait_for_model": True}
     # })
 
     # title_weight, content_weight = 0.8, 0.2
@@ -106,7 +110,10 @@ def filter_documents_by_threshold(top_documents, threshold):
     filtered_documents = [(title, content, score) for title, content, score in top_documents if score >= threshold]
     return filtered_documents
 
-def demo_rag_qna(query, threshold=0.75, chatbot=False):
+def demo_rag_qna(query, threshold=0.6, chatbot=False):
+    # Specific replacement for ristek name
+    query = replace_ristek(query)
+
     # Search engine phase
     start_time = time.time()
     # top_documents, encoding_time = search_documents_local(query, df)
