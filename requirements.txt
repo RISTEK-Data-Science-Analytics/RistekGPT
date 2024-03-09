@@ -6,6 +6,6 @@ huggingface-hub
 sentence_transformers
 transformers
 torch
-pickle
+pickle-mixin
 openpyxl
 deep_translator
