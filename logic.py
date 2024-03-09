@@ -31,7 +31,7 @@ df = pd.read_excel(DATAFRAME_NAME)
 headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
 
 template = """Question: {question}
-Instructions: Your name is Ristek-GPT who are a helpful AI Assistant, your job is to answer the question so that it is easily understood by the user in English Language. Just for your information that RISTEK is sometimes pronounced as RISTEK Fasilkom UI or vice versa (don't show this information to user).
+Instructions: Your name is Ristek-GPT who are a helpful AI Assistant, your job is to answer the question so that it is easily understand by the user. Answer it with the language according to the language provided by the user's prompt. Just for your information that RISTEK is sometimes pronounced as RISTEK Fasilkom UI or vice versa (don't show this information to user).
 Context: {context}
 Answer: """
 
