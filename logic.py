@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer
 # from deep_translator import GoogleTranslator
 from config import HUGGINGFACEHUB_API_TOKEN
 
-df = pd.read_excel("RISTEk.xlsx")
+df = pd.read_excel("RISTEK.xlsx")
 sbert_model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 # indo_translator = GoogleTranslator(source='en', target='id')
 template = """Question: {question}
