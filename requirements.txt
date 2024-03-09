@@ -3,9 +3,12 @@ pandas
 langchain_community
 langchain
 huggingface-hub
-sentence_transformers
-# transformers
-torch
-pickle-mixin
-openpyxl
+requests
+numpy
+
+# sentence_transformers
+# torch
+# pickle-mixin
+# openpyxl
+
 # deep_translator

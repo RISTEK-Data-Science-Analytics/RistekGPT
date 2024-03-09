@@ -1,5 +1,4 @@
 import streamlit as st
-import time
 from logic import demo_rag_qna
 
 # Hide the github logo
@@ -21,7 +20,6 @@ def main():
 
     question = st.text_input("Ask a question:", "")
 
-    # Two separate buttons for "With Chatbot" and "Without Chatbot".
     with_chatbot_button = st.button("With Chatbot")
     without_chatbot_button = st.button("Without Chatbot")
 
@@ -33,7 +31,7 @@ def main():
         response = ""
         with st.spinner("Thinking..."):
             # Adjust the chatbot parameter based on the button pressed.
-            response, search_engine_time, encoding_time, chatbot_time = demo_rag_qna(question, threshold=0.6, chatbot=chatbot_mode)
+            response, search_engine_time, chatbot_time = demo_rag_qna(question, threshold=0.6, chatbot=chatbot_mode)
 
         formatted_response = ""  # Initialize an empty string to accumulate the response.
         for i in range(len(response)):
@@ -44,7 +42,6 @@ def main():
         # Display chatbot and search engine time
         st.write("------")
         st.write("Search Engine Time:", round(search_engine_time,2), "seconds")
-        st.write("Encoding Time:", round(encoding_time,2), "seconds")
         st.write("Chatbot Time:", round(chatbot_time,2), "seconds")
 
     # Footer indicating "Powered by Gemma".
