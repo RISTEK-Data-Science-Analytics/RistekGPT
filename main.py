@@ -33,13 +33,18 @@ def main():
         response = ""
         with st.spinner("Thinking..."):
             # Adjust the chatbot parameter based on the button pressed.
-            response = demo_rag_qna(question, threshold=0.6, chatbot=chatbot_mode)
+            response, search_engine_time, chatbot_time = demo_rag_qna(question, threshold=0.6, chatbot=chatbot_mode)
 
         formatted_response = ""  # Initialize an empty string to accumulate the response.
         for i in range(len(response)):
-            time.sleep(0.002)  # Adjust sleep time to simulate typing speed.
+            # time.sleep(0.001)  # Adjust sleep time to simulate typing speed.
             formatted_response += response[i]  # Append the next character to the accumulated response.
             response_container.markdown(formatted_response, unsafe_allow_html=True)  # Render the response as Markdown.
+    
+        # Display chatbot and search engine time
+        st.write("------")
+        st.write("Search Engine Time:", round(search_engine_time,2), "seconds")
+        st.write("Chatbot Time:", round(chatbot_time,2), "seconds")
 
     # Footer indicating "Powered by Gemma".
     st.markdown("---")

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import torch
 import pickle
+import time
 
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain.chains import LLMChain
@@ -27,7 +28,13 @@ llm = HuggingFaceEndpoint(
 )
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 
-def query_llm_chain(question, context="No context"):
+with open('ristek_title_embeddings.pkl', 'rb') as f:
+    title_embeddings = pickle.load(f)
+    
+with open('ristek_content_embeddings.pkl', 'rb') as f:
+    content_embeddings = pickle.load(f)
+
+def query_llm_chain(question, context="No context provided. Use the context from your database"):
     response = llm_chain.invoke({"context": context, "question": question})
     return response['text']
 
@@ -38,12 +45,6 @@ def encode_texts(texts):
     return embeddings.cpu().numpy()
     
 def search_documents(query, df, top_n=1):
-    with open('ristek_title_embeddings.pkl', 'rb') as f:
-        title_embeddings = pickle.load(f)
-    
-    with open('ristek_content_embeddings.pkl', 'rb') as f:
-        content_embeddings = pickle.load(f)
-    
     query_embedding = encode_texts([query])[0]
 
     title_similarities = cosine_similarity([query_embedding], title_embeddings)[0]
@@ -62,12 +63,17 @@ def filter_documents_by_threshold(top_documents, threshold):
     return filtered_documents
 
 def demo_rag_qna(query, threshold=0.6, chatbot=False):
+    # Search engine phase
+    start_time = time.time()
     top_documents = search_documents(query, df)
     relevant_documents = filter_documents_by_threshold(top_documents, threshold)
+    end_time = time.time()
+    search_engine_time = end_time - start_time
 
     print("Top similarity:", top_documents[0][2])
     print()
 
+    start_time = time.time()
     concat_context = ""
     if chatbot:
         if len(relevant_documents)!=0:
@@ -75,17 +81,25 @@ def demo_rag_qna(query, threshold=0.6, chatbot=False):
                 concat_context += (content+"\n")
             # print("Context:\n", concat_context)
             # return indo_translator.translate(query_llm_chain(query, context=concat_context+"\nAnswer it based on this context."))
-            return query_llm_chain(query, context=concat_context+"\nAnswer it based on this context.")
+            result = query_llm_chain(query, context=concat_context+"\nAnswer it based on this context.")
+            end_time = time.time()
+            chatbot_time = end_time - start_time
+            return result, search_engine_time, chatbot_time
         else:
             # return indo_translator.translate(query_llm_chain(query))
-            return query_llm_chain(query)
+            result = query_llm_chain(query)
+            end_time = time.time()
+            chatbot_time = end_time - start_time
+            return result, search_engine_time, chatbot_time
     else:
+        end_time = time.time()
+        chatbot_time = end_time - start_time
         if top_documents[0][2] < threshold:
-            return 'There are no answers found in the database.'
+            return 'There are no answers found in the database.', search_engine_time, chatbot_time
         for i, (title, content, similarity) in enumerate(relevant_documents, start=1):
             concat_context += (content+"\n")
         # print("Context:\n", concat_context)
-        return concat_context
+        return concat_context, search_engine_time, chatbot_time
 
 
 if __name__ == "__main__":
