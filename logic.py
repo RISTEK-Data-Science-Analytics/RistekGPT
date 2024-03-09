@@ -8,10 +8,10 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
-from deep_translator import GoogleTranslator
+# from deep_translator import GoogleTranslator
 from config import HUGGINGFACEHUB_API_TOKEN
 
-df = pd.read_excel("./RISTEk.xlsx")
+df = pd.read_excel("RISTEk.xlsx")
 sbert_model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 # indo_translator = GoogleTranslator(source='en', target='id')
 template = """Question: {question}
@@ -38,10 +38,10 @@ def encode_texts(texts):
     return embeddings.cpu().numpy()
     
 def search_documents(query, df, top_n=1):
-    with open('./ristek_title_embeddings.pkl', 'rb') as f:
+    with open('ristek_title_embeddings.pkl', 'rb') as f:
         title_embeddings = pickle.load(f)
     
-    with open('./ristek_content_embeddings.pkl', 'rb') as f:
+    with open('ristek_content_embeddings.pkl', 'rb') as f:
         content_embeddings = pickle.load(f)
     
     query_embedding = encode_texts([query])[0]

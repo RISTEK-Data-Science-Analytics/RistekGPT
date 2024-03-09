@@ -4,8 +4,8 @@ langchain_community
 langchain
 huggingface-hub
 sentence_transformers
-transformers
+# transformers
 torch
 pickle-mixin
 openpyxl
-deep_translator
+# deep_translator
