@@ -1,7 +1,8 @@
-import os
 import streamlit as st
 import time
+from logic import demo_rag_qna
 
+# Hide the github logo
 st.markdown(
     """
     <style>
@@ -15,44 +16,24 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-HUGGINGFACEHUB_API_TOKEN = "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"
-# Assuming the HUGGINGFACEHUB_API_TOKEN is set in your environment for security reasons.
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACEHUB_API_TOKEN
-
-from langchain_community.llms import HuggingFaceEndpoint
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
-
-# Initialize your LLM template, endpoint, and chain outside the main function to avoid reinitialization on each rerun.
-template = """Question: {question}
-
-Answer: """
-prompt = PromptTemplate.from_template(template)
-repo_id = "google/gemma-7b-it"
-
-llm = HuggingFaceEndpoint(
-    repo_id=repo_id,
-    huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN
-)
-llm_chain = LLMChain(prompt=prompt, llm=llm)
-
-def query_llm_chain(question):
-    return llm_chain.invoke(question)['text']
-
 def main():
-    st.title("RistekGPT")
+    st.title("Ristek-GPT")
 
     question = st.text_input("Ask a question:", "")
 
-    # "Submit" button.
-    submit_button = st.button("Submit")
+    # Two separate buttons for "With Chatbot" and "Without Chatbot".
+    with_chatbot_button = st.button("With Chatbot")
+    without_chatbot_button = st.button("Without Chatbot")
 
-    if submit_button:
-        response_container = st.empty()  # Container to hold and update the response.
+    response_container = st.empty()  # Container to hold and update the response.
+
+    if with_chatbot_button or without_chatbot_button:
+        chatbot_mode = with_chatbot_button  # If the "With Chatbot" button is pressed, set chatbot_mode to True, otherwise False.
 
         response = ""
         with st.spinner("Thinking..."):
-            response = query_llm_chain(question)
+            # Adjust the chatbot parameter based on the button pressed.
+            response = demo_rag_qna(question, threshold=0.6, chatbot=chatbot_mode)
 
         formatted_response = ""  # Initialize an empty string to accumulate the response.
         for i in range(len(response)):
