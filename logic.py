@@ -30,7 +30,7 @@ df = pd.read_excel(DATAFRAME_NAME)
 headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
 
 template = """Question: {question}
-Instructions: Answer the question so that it is easily understood by the user in English Language. Additional information: RISTEK is sometimes pronounced as RISTEK Fasilkom UI or vice versa.
+Instructions: Your name is Ristek-GPT who are a helpful AI Assistant, your job is to answer the question so that it is easily understood by the user in English Language. If the question and the context are not relevant, just answer it the question from the knowledge in your database without considering the context. Just for your information that RISTEK is sometimes pronounced as RISTEK Fasilkom UI or vice versa (don't show this information to user).
 Context: {context}
 Answer: """
 
@@ -62,6 +62,7 @@ llm_chain = LLMChain(prompt=prompt, llm=llm)
 
 #     return top_documents
 
+# We couldn't preprocess the dataframe if we're using API
 def query_api(payload):
 	response = requests.post(API_ST_URL, headers=headers, json=payload)
 	return response.json()
@@ -71,8 +72,10 @@ def query_llm_chain(question, context="No context provided. Use the context from
     return response['text']
 
 def search_documents_api(query, df, top_n=1):
+    # Content could be considered for search engine or not
+
     titles = df['title'].tolist()
-    contents = df['content'].tolist()
+    # contents = df['content'].tolist()
 
     title_similarities = query_api({
         "inputs": {
@@ -81,16 +84,18 @@ def search_documents_api(query, df, top_n=1):
         }
     })
 
-    content_similarities = query_api({
-        "inputs": {
-            "source_sentence": query,
-            "sentences": contents
-        }
-    })
+    print(title_similarities)
+    # content_similarities = query_api({
+    #     "inputs": {
+    #         "source_sentence": query,
+    #         "sentences": contents
+    #     }
+    # })
 
-    title_weight, content_weight = 0.8, 0.2
-    # print(title_similarities, content_similarities)
-    total_similarities = [title_weight * t + content_weight * c for t, c in zip(title_similarities, content_similarities)]
+    # title_weight, content_weight = 0.8, 0.2
+    # total_similarities = [title_weight * t + content_weight * c for t, c in zip(title_similarities, content_similarities)]
+
+    total_similarities = title_similarities
 
     top_indices = np.argsort(total_similarities)[::-1][:top_n]
     top_documents = [(df.iloc[i]['title'], df.iloc[i]['content'], total_similarities[i]) for i in top_indices]
@@ -101,7 +106,7 @@ def filter_documents_by_threshold(top_documents, threshold):
     filtered_documents = [(title, content, score) for title, content, score in top_documents if score >= threshold]
     return filtered_documents
 
-def demo_rag_qna(query, threshold=0.6, chatbot=False):
+def demo_rag_qna(query, threshold=0.75, chatbot=False):
     # Search engine phase
     start_time = time.time()
     # top_documents, encoding_time = search_documents_local(query, df)
