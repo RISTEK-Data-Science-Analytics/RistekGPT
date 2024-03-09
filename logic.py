@@ -71,6 +71,7 @@ def demo_rag_qna(query, threshold=0.6, chatbot=False):
     relevant_documents = filter_documents_by_threshold(top_documents, threshold)
     end_time = time.time()
     search_engine_time = end_time - start_time
+    search_engine_time = search_engine_time - encoding_time
 
     print("Top similarity:", top_documents[0][2])
     print()
