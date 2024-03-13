@@ -9,6 +9,6 @@ numpy
 # sentence_transformers
 # torch
 # pickle-mixin
-# openpyxl
+openpyxl
 
 # deep_translator
