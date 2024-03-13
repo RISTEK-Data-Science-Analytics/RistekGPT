@@ -5,10 +5,8 @@ langchain
 huggingface-hub
 requests
 numpy
-
+openpyxl
 # sentence_transformers
 # torch
 # pickle-mixin
-openpyxl
-
 # deep_translator
