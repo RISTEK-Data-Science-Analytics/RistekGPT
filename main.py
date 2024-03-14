@@ -1,5 +1,6 @@
 import streamlit as st
 from logic import demo_rag_qna
+import time
 
 # Hide the github logo
 st.markdown(
@@ -35,7 +36,7 @@ def main():
 
         formatted_response = ""  # Initialize an empty string to accumulate the response.
         for i in range(len(response)):
-            # time.sleep(0.001)  # Adjust sleep time to simulate typing speed.
+            # time.sleep(0.002)  # Adjust sleep time to simulate typing speed.
             formatted_response += response[i]  # Append the next character to the accumulated response.
             response_container.markdown(formatted_response, unsafe_allow_html=True)  # Render the response as Markdown.
     

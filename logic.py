@@ -9,7 +9,7 @@ from langchain_community.llms import HuggingFaceEndpoint
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from config import HUGGINGFACEHUB_API_TOKEN, DATAFRAME_NAME, API_ST_URL, GENERATOR_ID
-from processing import replace_ristek
+from processing import replace_rulebase
 # from sklearn.metrics.pairwise import cosine_similarity
 # from sentence_transformers import SentenceTransformer
 # from deep_translator import GoogleTranslator
@@ -31,7 +31,7 @@ df = pd.read_excel(DATAFRAME_NAME)
 headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
 
 template = """Question: {question}
-Instructions: Your name is Ristek-GPT who are a helpful AI Assistant, your job is to answer the question so that it is easily understood by the user in English Language. Just for your information that RISTEK is sometimes pronounced as RISTEK Fasilkom UI or vice versa (don't show this information to user).
+Instructions: Your name is Ristek-GPT who are a helpful AI Assistant, your job is to answer the question so that it is easily understood by the user in English Language.
 Context: {context}
 Answer: """
 
@@ -112,7 +112,7 @@ def filter_documents_by_threshold(top_documents, threshold):
 
 def demo_rag_qna(query, threshold=0.6, chatbot=False):
     # Specific replacement for ristek name
-    query = replace_ristek(query)
+    query = replace_rulebase(query)
 
     # Search engine phase
     start_time = time.time()
