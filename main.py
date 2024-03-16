@@ -1,6 +1,7 @@
 import streamlit as st
 from logic import demo_rag_qna
 import time
+from config import GENERATOR_NAME
 
 # Hide the github logo
 st.markdown(
@@ -17,7 +18,7 @@ st.markdown(
 )
 
 def main():
-    st.title("Ristek-GPT")
+    st.title(GENERATOR_NAME)
 
     question = st.text_input("Ask a question:", "")
 
@@ -29,21 +30,21 @@ def main():
     if with_chatbot_button or without_chatbot_button:
         chatbot_mode = with_chatbot_button  # If the "With Chatbot" button is pressed, set chatbot_mode to True, otherwise False.
 
-        response = ""
+        formatted_response = ""
         with st.spinner("Thinking..."):
-            # Adjust the chatbot parameter based on the button pressed.
-            response, search_engine_time, chatbot_time = demo_rag_qna(question, threshold=0.75, chatbot=chatbot_mode)
+            for part in demo_rag_qna(question, threshold=0.75, chatbot=chatbot_mode, use_streaming=True):
+                if isinstance(part, dict) and "type" in part and part["type"] == "metrics":
+                    # The part is the metrics dict
+                    search_engine_time = part.get("search_engine_time", 0)
+                    chatbot_time = part.get("chatbot_time", 0)
 
-        formatted_response = ""  # Initialize an empty string to accumulate the response.
-        for i in range(len(response)):
-            # time.sleep(0.002)  # Adjust sleep time to simulate typing speed.
-            formatted_response += response[i]  # Append the next character to the accumulated response.
-            response_container.markdown(formatted_response, unsafe_allow_html=True)  # Render the response as Markdown.
-    
-        # Display chatbot and search engine time
-        st.write("------")
-        st.write("Search Engine Time:", round(search_engine_time,2), "seconds")
-        st.write("Chatbot Time:", round(chatbot_time,2), "seconds")
+                    # Display the timing information
+                    st.write("Search Engine Time:", round(search_engine_time, 2), "seconds")
+                    st.write("Chatbot Time:", round(chatbot_time, 2), "seconds")
+                else:
+                    # The part is a content token
+                    formatted_response += part
+                    response_container.markdown(formatted_response, unsafe_allow_html=True)
 
     # Footer indicating "Powered by Gemma".
     st.markdown("---")

@@ -6,7 +6,7 @@ huggingface-hub
 requests
 numpy
 openpyxl
-# sentence_transformers
-# torch
-# pickle-mixin
+sentence_transformers
+torch
+pickle-mixin
 # deep_translator
