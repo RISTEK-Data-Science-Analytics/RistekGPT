@@ -8,7 +8,7 @@ import pickle
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from config import HUGGINGFACEHUB_API_TOKEN, DATAFRAME_NAME, API_ST_URL, GENERATOR_ID, \
+from config import DATAFRAME_NAME, API_ST_URL, GENERATOR_ID, \
                     TITLE_EMBEDDING, CONTENT_EMBEDDING, ST_URL, instruction
 from processing import replace_rulebase
 from sklearn.metrics.pairwise import cosine_similarity
@@ -19,6 +19,7 @@ from streaming import QueueStreamingCallbackHandler, start_llm_generation, strea
 # For translation purpose
 # indo_translator = GoogleTranslator(source='en', target='id')
 
+HUGGINGFACEHUB_API_TOKEN = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
 df = pd.read_excel(DATAFRAME_NAME)
 headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
 
