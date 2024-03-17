@@ -28,6 +28,6 @@ def start_llm_generation(llm, input_text, callback_handler):
 def stream_tokens(queue):
     while True:
         token = queue.get()
-        if token is None or token=="<eos>":  # Use None as a signal for the end of the stream
+        if token is None or token=="<eos>" or token=="</s>":  # Use None as a signal for the end of the stream
             break
         yield token

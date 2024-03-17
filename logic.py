@@ -28,6 +28,7 @@ Context: {context}
 Answer: """
 
 sbert_model = SentenceTransformer(ST_URL)
+sbert_model.eval()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 sbert_model.to(device)
 
@@ -152,6 +153,7 @@ def demo_rag_qna(query, threshold=0.6, chatbot=False, use_streaming=False):
         else:
             # indo_translator.translate(query_llm_chain(query, instruction, streaming=use_streaming))
             for result in query_llm_chain(query, instruction, streaming=use_streaming):
+                # print(result)
                 yield result
 
             chatbot_end_time = time.time()
