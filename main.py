@@ -32,7 +32,7 @@ def main():
 
         formatted_response = ""
         with st.spinner("Thinking..."):
-            for part in demo_rag_qna(question, threshold=0.75, chatbot=chatbot_mode, use_streaming=True):
+            for part in demo_rag_qna(question, threshold=0.7, chatbot=chatbot_mode, use_streaming=True):
                 if isinstance(part, dict) and "type" in part and part["type"] == "metrics":
                     # The part is the metrics dict
                     search_engine_time = part.get("search_engine_time", 0)

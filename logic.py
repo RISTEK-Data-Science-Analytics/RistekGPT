@@ -45,6 +45,8 @@ llm = HuggingFaceEndpoint(
     repo_id=GENERATOR_ID,
     huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN,
     streaming=True,
+    return_full_text=True,
+    max_new_tokens=1000,
 )
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 
